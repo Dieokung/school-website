@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="ตราสัญลักษณ์โรงเรียนโคราชพิทยาคม">
+  <defs>
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B2545"/>
+      <stop offset="100%" stop-color="#13396B"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer shield -->
+  <path d="M60 4 L112 22 V58 C112 88 90 108 60 116 C30 108 8 88 8 58 V22 Z"
+        fill="url(#navyGrad)" stroke="#C9A227" stroke-width="3"/>
+  <!-- Inner ring -->
+  <path d="M60 14 L102 29 V58 C102 82 84 99 60 106 C36 99 18 82 18 58 V29 Z"
+        fill="none" stroke="#C9A227" stroke-width="1.5" opacity="0.6"/>
+  <!-- Open book (education) -->
+  <g transform="translate(60,64)" fill="#F7F8FA">
+    <path d="M-28 -14 C-16 -20 -6 -18 0 -12 V22 C-6 16 -16 14 -28 20 Z"/>
+    <path d="M28 -14 C16 -20 6 -18 0 -12 V22 C6 16 16 14 28 20 Z"/>
+  </g>
+  <!-- Rising torch/flame (wisdom) -->
+  <path d="M60 12 C66 20 70 26 66 34 C64 30 62 30 60 34 C58 30 56 30 54 34 C50 26 54 20 60 12 Z"
+        fill="#C9A227"/>
+  <!-- Ribbon banner -->
+  <path d="M16 96 L60 108 L104 96 L96 116 L60 120 L24 116 Z" fill="#C9A227"/>
+  <text x="60" y="112" text-anchor="middle" font-family="Kanit, sans-serif" font-size="9" fill="#0B2545" font-weight="700">KPK</text>
+</svg>

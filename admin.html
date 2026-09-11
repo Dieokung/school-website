@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบหลังบ้าน (สำหรับครู) | โรงเรียนโคราชพิทยาคม</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="images/favicon.png" data-cms-img="site.logo">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  :root{ --admin-bg:#f2f4f8; }
+  body{ background:var(--admin-bg); }
+  .admin-wrap{ max-width:1080px; margin:0 auto; padding:24px 18px 80px; }
+  .admin-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+  .admin-header h1{ font-size:1.4rem; margin:0; }
+  .admin-card{ background:#fff; border:1px solid #e3e7ef; border-radius:14px; padding:20px 22px; margin-bottom:20px; box-shadow:0 1px 2px rgba(20,30,60,.04); }
+  .admin-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .admin-tab-btn{ border:1px solid #d7dce6; background:#fff; padding:9px 16px; border-radius:999px; cursor:pointer; font-family:inherit; font-size:.92rem; }
+  .admin-tab-btn.active{ background:var(--primary,#1e3a8a); color:#fff; border-color:transparent; }
+  .admin-panel{ display:none; }
+  .admin-panel.active{ display:block; }
+  .field-group{ margin-bottom:22px; }
+  .field-group h3{ font-size:1rem; margin:0 0 12px; padding-bottom:8px; border-bottom:1px dashed #dde2ec; color:#22304a; }
+  .field-row{ margin-bottom:12px; }
+  .field-row label{ display:block; font-size:.85rem; color:#555; margin-bottom:4px; }
+  .field-row input[type=text], .field-row textarea{
+    width:100%; box-sizing:border-box; padding:9px 11px; border:1px solid #cfd6e2; border-radius:8px;
+    font-family:inherit; font-size:.92rem; background:#fbfcfe;
+  }
+  .field-row textarea{ min-height:64px; resize:vertical; }
+  .field-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:0 16px; }
+  .item-card{ border:1px solid #e3e7ef; border-radius:12px; padding:14px 16px; margin-bottom:14px; background:#fbfcfe; position:relative; }
+  .item-card .item-toolbar{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+  .btn-mini{ border:none; border-radius:7px; padding:6px 12px; font-size:.82rem; cursor:pointer; font-family:inherit; }
+  .btn-mini.danger{ background:#fde8e8; color:#b3261e; }
+  .btn-mini.up{ background:#eef1f7; color:#33415c; }
+  .btn-add{ background:#e7edff; color:#1e3a8a; border:1px dashed #a9bdf2; border-radius:10px; padding:10px 16px; cursor:pointer; font-family:inherit; width:100%; font-size:.92rem; }
+  .save-bar{ position:sticky; bottom:0; background:#fff; border-top:1px solid #e3e7ef; padding:14px 22px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; border-radius:14px; box-shadow:0 -2px 10px rgba(20,30,60,.05); }
+  .save-msg{ font-size:.85rem; color:#0a8a4a; }
+  .lock-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .lock-box{ background:#fff; border-radius:16px; padding:34px 30px; width:100%; max-width:360px; box-shadow:0 6px 24px rgba(20,30,60,.12); text-align:center; }
+  .lock-box input{ width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid #cfd6e2; border-radius:9px; font-size:1rem; margin:14px 0; text-align:center; }
+  .badge-note{ background:#fff7e6; border:1px solid #ffe0a3; color:#8a5b00; padding:12px 14px; border-radius:10px; font-size:.85rem; line-height:1.6; margin-bottom:18px; }
+  .staff-group-title{ font-weight:600; margin:18px 0 8px; color:#22304a; }
+</style>
+</head>
+<body>
+
+<!-- ===== หน้าจอใส่รหัสผ่าน ===== -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div style="font-size:2rem;">🔐</div>
+    <h2 style="margin:10px 0 4px;">ระบบหลังบ้านสำหรับครู</h2>
+    <p style="color:#667; font-size:.9rem;">กรอกรหัสผ่านเพื่อแก้ไขข้อมูลเว็บไซต์</p>
+    <input type="password" id="pinInput" placeholder="รหัสผ่าน" autocomplete="off">
+    <button class="btn btn-primary" style="width:100%;" id="pinSubmit">เข้าสู่ระบบ</button>
+    <p id="pinError" style="color:#c0392b; font-size:.82rem; margin-top:10px; display:none;">รหัสผ่านไม่ถูกต้อง ลองอีกครั้ง</p>
+    <p style="color:#98a2b3; font-size:.75rem; margin-top:16px;">
+      หมายเหตุ: รหัสผ่านนี้กันคนทั่วไปเข้ามาแก้โดยไม่ตั้งใจเท่านั้น ไม่ใช่ระบบความปลอดภัยระดับสูง
+      เพราะเว็บไซต์นี้เป็น Static Website ไม่มีเซิร์ฟเวอร์ตรวจสอบสิทธิ์จริง
+    </p>
+  </div>
+</div>
+
+<!-- ===== ตัวระบบหลังบ้าน ===== -->
+<div class="admin-wrap" id="adminApp" style="display:none;">
+  <div class="admin-header">
+    <div>
+      <a href="index.html" style="font-size:.85rem; color:#667; text-decoration:none;">← กลับหน้าเว็บไซต์</a>
+      <h1>🛠 ระบบหลังบ้าน — แก้ไขข้อมูลเว็บไซต์</h1>
+    </div>
+    <button class="btn btn-outline" id="logoutBtn" style="font-size:.85rem;">ออกจากระบบ</button>
+  </div>
+
+  <div class="badge-note">
+    🟢 <strong>เชื่อมต่อฐานข้อมูลแล้ว (Firebase):</strong> พิมพ์แก้ข้อมูลในฟอร์มด้านล่างได้เลย ระบบจะ<strong>บันทึกขึ้นเว็บจริงให้อัตโนมัติ</strong>
+    ไม่ต้องกดปุ่มบันทึกเอง ไม่ต้องดาวน์โหลด-อัปโหลดไฟล์อีกต่อไป — ดูสถานะการบันทึกได้ที่แถบล่างสุดของหน้า
+  </div>
+
+  <div class="admin-tabs" id="adminTabs"></div>
+
+  <div id="panelSite" class="admin-panel"></div>
+  <div id="panelNews" class="admin-panel"></div>
+  <div id="panelActivities" class="admin-panel"></div>
+  <div id="panelAnnouncements" class="admin-panel"></div>
+  <div id="panelStaff" class="admin-panel"></div>
+
+  <div class="admin-card save-bar">
+    <span class="save-msg" id="saveMsg">🟢 ข้อมูลล่าสุด — พร้อมแก้ไข</span>
+    <button class="btn btn-outline" id="reloadBtn" style="margin-left:auto;">🔄 ซิงก์ข้อมูลล่าสุด</button>
+    <button class="btn btn-outline" id="downloadBtn">⬇️ ดาวน์โหลดสำรอง (data.json)</button>
+  </div>
+</div>
+
+<script type="module" src="js/script.js"></script>
+<script type="module">
+(function () {
+  "use strict";
+
+  /* ⚠️ ตั้งรหัสผ่านสำหรับเข้าระบบหลังบ้านตรงนี้ (แก้ได้เองโดยพิมพ์ทับข้อความในเครื่องหมายคำพูด) */
+  const ADMIN_PIN = "korat2569";
+
+  const { DEFAULTS, loadData, getPath, setPath, compressImage, saveSiteConfig, saveItem, deleteItem, debounce } = window.SchoolCMS;
+  let DATA = null;
+
+  /* ---------- ล็อกอิน ---------- */
+  const lockScreen = document.getElementById("lockScreen");
+  const adminApp = document.getElementById("adminApp");
+  const pinInput = document.getElementById("pinInput");
+  const pinError = document.getElementById("pinError");
+
+  function tryUnlock() {
+    if (pinInput.value === ADMIN_PIN) {
+      sessionStorage.setItem("schoolCMSUnlocked", "1");
+      lockScreen.style.display = "none";
+      adminApp.style.display = "block";
+      boot();
+    } else {
+      pinError.style.display = "block";
+    }
+  }
+  document.getElementById("pinSubmit").addEventListener("click", tryUnlock);
+  pinInput.addEventListener("keydown", (e) => { if (e.key === "Enter") tryUnlock(); });
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    sessionStorage.removeItem("schoolCMSUnlocked");
+    location.reload();
+  });
+
+  if (sessionStorage.getItem("schoolCMSUnlocked") === "1") {
+    lockScreen.style.display = "none";
+    adminApp.style.display = "block";
+    boot();
+  }
+
+  /* ---------- โหลดข้อมูลจริงจาก Firestore ---------- */
+  function boot() {
+    setStatus("loading");
+    loadData().then((live) => {
+      DATA = live;
+      renderAll();
+      setStatus("saved");
+    });
+  }
+
+  /* ---------- สถานะการบันทึก ---------- */
+  function setStatus(state, detail) {
+    const msg = document.getElementById("saveMsg");
+    if (state === "loading") { msg.textContent = "⏳ กำลังโหลดข้อมูล..."; msg.style.color = "#8a5b00"; }
+    else if (state === "saving") { msg.textContent = "🟡 กำลังบันทึกขึ้นเว็บ..."; msg.style.color = "#8a5b00"; }
+    else if (state === "saved") { msg.textContent = "🟢 บันทึกขึ้นเว็บแล้ว (" + new Date().toLocaleTimeString("th-TH") + ")"; msg.style.color = "#0a8a4a"; }
+    else if (state === "error") { msg.textContent = "🔴 บันทึกไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ต แล้วลองพิมพ์ใหม่อีกครั้ง (" + (detail || "") + ")"; msg.style.color = "#b3261e"; }
+  }
+
+  /* ---------- บันทึกข้อมูล "ข้อมูลทั่วไป" ขึ้น Firestore แบบหน่วงเวลา (กันบันทึกถี่เกินไปตอนพิมพ์) ---------- */
+  const pushSite = debounce(() => {
+    setStatus("saving");
+    saveSiteConfig(DATA.site).then(() => setStatus("saved")).catch((e) => setStatus("error", e.message));
+  }, 900);
+
+  /* ---------- บันทึกรายการ (ข่าว/กิจกรรม/ประกาศ/บุคลากร) ขึ้น Firestore แบบหน่วงเวลา ทีละรายการ ---------- */
+  const pushItem = debounce((itemKey, colName, item) => {
+    setStatus("saving");
+    saveItem(colName, item).then(() => setStatus("saved")).catch((e) => setStatus("error", e.message));
+  }, 900);
+
+  /* ---------- ดาวน์โหลดสำรอง / ซิงก์ข้อมูลล่าสุด ---------- */
+  document.getElementById("downloadBtn").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(DATA, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "data.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById("reloadBtn").addEventListener("click", () => {
+    loadData().then((live) => { DATA = live; renderAll(); setStatus("saved"); });
+  });
+
+  /* ---------- แท็บ ---------- */
+  const TABS = [
+    { key: "Site", label: "ข้อมูลทั่วไป" },
+    { key: "News", label: "ข่าวประชาสัมพันธ์" },
+    { key: "Activities", label: "กิจกรรม" },
+    { key: "Announcements", label: "ประกาศหน้าแรก" },
+    { key: "Staff", label: "บุคลากร" },
+  ];
+  function renderTabs() {
+    const wrap = document.getElementById("adminTabs");
+    wrap.innerHTML = TABS.map((t, i) => `<button class="admin-tab-btn${i === 0 ? " active" : ""}" data-tab="${t.key}">${t.label}</button>`).join("");
+    wrap.querySelectorAll(".admin-tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        wrap.querySelectorAll(".admin-tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
+        TABS.forEach((t) => document.getElementById("panel" + t.key).classList.toggle("active", "panel" + t.key === "panel" + btn.dataset.tab));
+      });
+    });
+    document.getElementById("panelSite").classList.add("active");
+  }
+
+  /* ---------- แบบฟอร์ม "ข้อมูลทั่วไป" (สร้างจากรายการฟิลด์อัตโนมัติ) ---------- */
+  const SITE_FIELD_GROUPS = [
+    { title: "ข้อมูลติดต่อ (ใช้ทุกหน้า)", fields: [
+      ["site.phone", "เบอร์โทรศัพท์", "text"],
+      ["site.fax", "เบอร์โทรสาร", "text"],
+      ["site.email", "อีเมล", "text"],
+      ["site.address", "ที่อยู่แบบสั้น (แสดงบนแถบบนสุด/ท้ายเว็บ)", "text"],
+      ["site.addressFull", "ที่อยู่แบบเต็ม (หน้าติดต่อเรา/เกี่ยวกับโรงเรียน)", "textarea"],
+      ["site.mapQuery", "คำค้นหาสำหรับปักหมุดแผนที่ (เช่น ชื่อโรงเรียน หรือที่อยู่)", "text"],
+      ["site.mapNote", "หมายเหตุใต้แผนที่", "text"],
+    ]},
+    { title: "โซเชียลมีเดีย (ใส่ลิงก์เต็ม เช่น https://facebook.com/...)", fields: [
+      ["site.facebook", "Facebook", "text"],
+      ["site.youtube", "YouTube", "text"],
+      ["site.line", "Line", "text"],
+      ["site.instagram", "Instagram", "text"],
+    ]},
+    { title: "หน้าแรก — Hero", fields: [
+      ["site.province", "จังหวัด", "text"],
+      ["site.heroTagline", "ข้อความแนะนำโรงเรียนใต้หัวข้อใหญ่", "textarea"],
+      ["site.heroFounded", "ปีที่ก่อตั้ง", "text"],
+      ["site.heroStudents", "จำนวนนักเรียนทั้งหมด", "text"],
+      ["site.heroTeachers", "จำนวนครูและบุคลากร", "text"],
+      ["site.heroClassrooms", "จำนวนห้องเรียน", "text"],
+    ]},
+    { title: "หน้าแรก — แนะนำโรงเรียน / วิสัยทัศน์ / พันธกิจ", fields: [
+      ["site.aboutTeaser", "ย่อหน้าแนะนำโรงเรียน", "textarea"],
+      ["site.homeVision", "วิสัยทัศน์ (แบบย่อ)", "textarea"],
+      ["site.homeMission", "พันธกิจ (แบบย่อ)", "textarea"],
+    ]},
+    { title: "หน้าเกี่ยวกับโรงเรียน — ประวัติ", fields: [
+      ["site.history", "ความเป็นมาของโรงเรียน", "textarea"],
+      ["site.tl1Year", "ไทม์ไลน์ 1 — ปี พ.ศ.", "text"],
+      ["site.tl1Text", "ไทม์ไลน์ 1 — เหตุการณ์", "text"],
+      ["site.tl2Year", "ไทม์ไลน์ 2 — ปี พ.ศ.", "text"],
+      ["site.tl2Text", "ไทม์ไลน์ 2 — เหตุการณ์", "text"],
+      ["site.tl3Year", "ไทม์ไลน์ 3 — ปี พ.ศ.", "text"],
+      ["site.tl3Text", "ไทม์ไลน์ 3 — เหตุการณ์", "text"],
+      ["site.tl4Text", "ไทม์ไลน์ 4 — สถานะปัจจุบัน", "text"],
+    ]},
+    { title: "หน้าเกี่ยวกับโรงเรียน — วิสัยทัศน์ พันธกิจ เอกลักษณ์ (แบบเต็ม)", fields: [
+      ["site.vision", "วิสัยทัศน์", "textarea"],
+      ["site.mission", "พันธกิจ", "textarea"],
+      ["site.identity", "เอกลักษณ์ / อัตลักษณ์", "textarea"],
+    ]},
+    { title: "หน้าเกี่ยวกับโรงเรียน — ข้อมูลทั่วไป", fields: [
+      ["site.affiliation", "หน่วยงานต้นสังกัด", "text"],
+      ["site.level", "ระดับชั้นที่เปิดสอน", "text"],
+      ["site.studentCount", "จำนวนนักเรียนปัจจุบัน", "text"],
+      ["site.staffCount", "จำนวนครูและบุคลากร", "text"],
+      ["site.schoolColor", "สีประจำโรงเรียน", "text"],
+      ["site.motto", "คติพจน์ประจำโรงเรียน", "text"],
+      ["site.websiteUrl", "URL เว็บไซต์ทางการ", "text"],
+    ]},
+    { title: "ส่วนท้ายเว็บไซต์ (Footer)", fields: [
+      ["site.footerDesc", "คำอธิบายสั้น ๆ เกี่ยวกับโรงเรียน", "textarea"],
+    ]},
+  ];
+
+  function renderSitePanel() {
+    const panel = document.getElementById("panelSite");
+    panel.innerHTML = `
+      <div class="admin-card">
+        <h3 style="margin:0 0 12px;">โลโก้โรงเรียน</h3>
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+          <img id="logoPreview" src="${DATA.site.logo || 'images/logo.svg'}" alt="โลโก้" style="width:72px;height:72px;object-fit:contain;background:#f2f4f8;border-radius:12px;padding:6px;border:1px solid #e3e7ef;">
+          <div>
+            <input type="file" id="logoFile" accept="image/*">
+            <p style="color:#98a2b3; font-size:.78rem; margin-top:6px;">แนะนำไฟล์ PNG พื้นหลังโปร่งใส ระบบจะย่อขนาดให้อัตโนมัติ</p>
+            <button class="btn-mini danger" id="logoRemove" type="button" style="margin-top:4px;">ลบโลโก้ที่อัปโหลด (ใช้ค่าเริ่มต้น)</button>
+          </div>
+        </div>
+      </div>` +
+      SITE_FIELD_GROUPS.map((g, gi) => `
+      <div class="admin-card field-group">
+        <h3>${g.title}</h3>
+        <div class="field-grid">
+          ${g.fields.map(([path, label, type]) => `
+            <div class="field-row" style="${type === 'textarea' ? 'grid-column:1/-1;' : ''}">
+              <label>${label}</label>
+              ${type === "textarea"
+                ? `<textarea data-path="${path}">${escapeHtml(getPath(DATA, path) || "")}</textarea>`
+                : `<input type="text" data-path="${path}" value="${escapeAttr(getPath(DATA, path) || "")}">`
+              }
+            </div>`).join("")}
+        </div>
+      </div>`).join("");
+    panel.querySelectorAll("[data-path]").forEach((el) => {
+      el.addEventListener("input", () => {
+        setPath(DATA, el.getAttribute("data-path"), el.value);
+        pushSite();
+      });
+    });
+    document.getElementById("logoFile").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      compressImage(file, { maxDim: 400, quality: 0.9, mime: "image/png" }).then((dataUrl) => {
+        DATA.site.logo = dataUrl;
+        document.getElementById("logoPreview").src = dataUrl;
+        setStatus("saving");
+        saveSiteConfig(DATA.site).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+      });
+    });
+    document.getElementById("logoRemove").addEventListener("click", () => {
+      DATA.site.logo = "";
+      document.getElementById("logoPreview").src = "images/logo.svg";
+      setStatus("saving");
+      saveSiteConfig(DATA.site).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+    });
+  }
+
+  /* ---------- ตัวช่วย: escape ข้อความก่อนใส่ลง HTML ---------- */
+  function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
+  function uid(prefix) { return prefix + Date.now().toString(36) + Math.floor(Math.random() * 1000); }
+
+  /* ---------- ตัวสร้าง "รายการที่แก้ไขได้" ใช้ร่วมกันสำหรับ ข่าว/กิจกรรม/ประกาศ (colName = ชื่อ collection ใน Firestore) ---------- */
+  function renderListPanel(panelId, listKey, colName, fieldsDef, addLabel, emptyItem) {
+    const panel = document.getElementById(panelId);
+    const list = DATA[listKey];
+    panel.innerHTML = `<div class="admin-card">` +
+      list.map((item, idx) => `
+        <div class="item-card" data-idx="${idx}">
+          ${fieldsDef.some(f => f[2] === "image") ? fieldsDef.filter(f => f[2] === "image").map(([key, label]) => `
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+              <img class="img-preview-${key}" src="${item[key] || ''}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;background:#eef1f7;display:${item[key] ? 'block' : 'none'};">
+              <div>
+                <label style="display:block; font-size:.85rem; color:#555; margin-bottom:4px;">${label}</label>
+                <input type="file" accept="image/*" data-img-key="${key}">
+              </div>
+            </div>`).join("") : ""}
+          <div class="field-grid">
+            ${fieldsDef.filter(f => f[2] !== "image").map(([key, label, type, width]) => `
+              <div class="field-row" style="${width === 'full' ? 'grid-column:1/-1;' : ''}">
+                <label>${label}</label>
+                ${type === "textarea"
+                  ? `<textarea data-key="${key}">${escapeHtml(item[key] || "")}</textarea>`
+                  : `<input type="text" data-key="${key}" value="${escapeAttr(item[key] || "")}">`
+                }
+              </div>`).join("")}
+          </div>
+          <div class="item-toolbar">
+            <button class="btn-mini up" data-act="up">⬆ เลื่อนขึ้น</button>
+            <button class="btn-mini danger" data-act="del">🗑 ลบรายการนี้</button>
+          </div>
+        </div>`).join("") +
+      `<button class="btn-add" id="addBtn-${panelId}">＋ ${addLabel}</button></div>`;
+
+    panel.querySelectorAll(".item-card").forEach((card) => {
+      const idx = Number(card.dataset.idx);
+      card.querySelectorAll("[data-key]").forEach((el) => {
+        el.addEventListener("input", () => {
+          list[idx][el.getAttribute("data-key")] = el.value;
+          pushItem(list[idx].id, colName, list[idx]);
+        });
+      });
+      card.querySelectorAll("[data-img-key]").forEach((el) => {
+        el.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const key = el.getAttribute("data-img-key");
+          compressImage(file, { maxDim: 900, quality: 0.75, mime: "image/jpeg" }).then((dataUrl) => {
+            list[idx][key] = dataUrl;
+            const prev = card.querySelector(`.img-preview-${key}`);
+            prev.src = dataUrl;
+            prev.style.display = "block";
+            setStatus("saving");
+            saveItem(colName, list[idx]).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+          });
+        });
+      });
+      card.querySelector('[data-act="del"]').addEventListener("click", () => {
+        if (confirm("ลบรายการนี้ใช่หรือไม่? การลบจะมีผลกับเว็บไซต์จริงทันที")) {
+          const removedId = list[idx].id;
+          list.splice(idx, 1);
+          setStatus("saving");
+          deleteItem(colName, removedId).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+          renderListPanel(panelId, listKey, colName, fieldsDef, addLabel, emptyItem);
+        }
+      });
+      card.querySelector('[data-act="up"]').addEventListener("click", () => {
+        if (idx > 0) {
+          const a = list[idx - 1], b = list[idx];
+          const tmpOrder = a.order; a.order = b.order; b.order = tmpOrder;
+          list[idx - 1] = b; list[idx] = a;
+          setStatus("saving");
+          Promise.all([saveItem(colName, a), saveItem(colName, b)])
+            .then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+          renderListPanel(panelId, listKey, colName, fieldsDef, addLabel, emptyItem);
+        }
+      });
+    });
+    document.getElementById(`addBtn-${panelId}`).addEventListener("click", () => {
+      const item = typeof emptyItem === "function" ? emptyItem() : { ...emptyItem };
+      item.order = list.length;
+      list.push(item);
+      setStatus("saving");
+      saveItem(colName, item).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+      renderListPanel(panelId, listKey, colName, fieldsDef, addLabel, emptyItem);
+    });
+  }
+
+  function renderNewsPanel() {
+    renderListPanel("panelNews", "news", "news",
+      [["image", "รูปข่าว", "image"], ["title", "หัวข้อข่าว", "text", "full"], ["category", "หมวดหมู่", "text"], ["date", "วันที่ (YYYY-MM-DD)", "text"], ["excerpt", "รายละเอียดย่อ (แสดงในการ์ด)", "textarea", "full"], ["content", "เนื้อหาเต็ม (แสดงตอนกดอ่านเพิ่มเติม — ถ้าไม่กรอกจะใช้รายละเอียดย่อแทน)", "textarea", "full"]],
+      "เพิ่มข่าวใหม่",
+      () => ({ id: uid("n"), title: "[หัวข้อข่าวใหม่]", category: "ประกาศ", date: new Date().toISOString().slice(0, 10), excerpt: "[รายละเอียดข่าว]", content: "", image: "" })
+    );
+  }
+  function renderActivitiesPanel() {
+    renderListPanel("panelActivities", "activities", "activities",
+      [["image", "รูปกิจกรรม", "image"], ["title", "ชื่อกิจกรรม", "text", "full"], ["date", "วันที่ (YYYY-MM-DD)", "text"], ["desc", "รายละเอียด", "textarea", "full"]],
+      "เพิ่มกิจกรรมใหม่",
+      () => ({ id: uid("a"), title: "[ชื่อกิจกรรมใหม่]", date: new Date().toISOString().slice(0, 10), desc: "[รายละเอียดกิจกรรม]", image: "" })
+    );
+  }
+  function renderAnnouncementsPanel() {
+    renderListPanel("panelAnnouncements", "announcements", "announcements",
+      [["icon", "ไอคอน (เช่น ❗ 📢 🧾)", "text"], ["date", "วันที่ประกาศ", "text"], ["title", "หัวข้อประกาศ", "text", "full"], ["detail", "รายละเอียดเพิ่มเติม", "text", "full"]],
+      "เพิ่มประกาศใหม่",
+      () => ({ id: uid("an"), icon: "📌", title: "[หัวข้อประกาศใหม่]", date: "", detail: "" })
+    );
+  }
+
+  /* ---------- บุคลากร: จัดกลุ่มตามฝ่าย ---------- */
+  function renderStaffPanel() {
+    const panel = document.getElementById("panelStaff");
+    const groups = DATA.departments.groups;
+    panel.innerHTML = groups.map((g) => `
+      <div class="admin-card">
+        <div class="staff-group-title">${g.label}</div>
+        <div id="staffList-${g.key}"></div>
+        <button class="btn-add" id="staffAdd-${g.key}">＋ เพิ่มบุคลากรใน${g.label}</button>
+      </div>`).join("");
+
+    groups.forEach((g) => renderStaffGroup(g.key, g.label));
+  }
+  function renderStaffGroup(groupKey, groupLabel) {
+    const listEl = document.getElementById(`staffList-${groupKey}`);
+    const staffAll = DATA.departments.staff;
+    const items = staffAll.filter((s) => s.group === groupKey);
+    listEl.innerHTML = items.map((item) => {
+      const realIdx = staffAll.indexOf(item);
+      return `
+      <div class="item-card" data-real-idx="${realIdx}">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <img class="staff-photo-preview" src="${item.photo || ''}" alt="" style="width:52px;height:52px;object-fit:cover;border-radius:50%;background:#eef1f7;display:${item.photo ? 'block' : 'none'};">
+          <div>
+            <label style="display:block; font-size:.85rem; color:#555; margin-bottom:4px;">รูปถ่าย (ไม่บังคับ)</label>
+            <input type="file" accept="image/*" data-photo-key="photo">
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field-row"><label>ชื่อ-สกุล</label><input type="text" data-key="name" value="${escapeAttr(item.name)}"></div>
+          <div class="field-row"><label>ตำแหน่ง/กลุ่มสาระ</label><input type="text" data-key="role" value="${escapeAttr(item.role)}"></div>
+          <div class="field-row" style="grid-column:1/-1;"><label>รายละเอียดเพิ่มเติม (ไม่บังคับ — แสดงตอนกดดูข้อมูลเต็มๆ เช่น วิชาที่สอน ประวัติ)</label><textarea data-key="bio">${escapeHtml(item.bio || "")}</textarea></div>
+        </div>
+        <div class="item-toolbar"><button class="btn-mini danger" data-act="del">🗑 ลบ</button></div>
+      </div>`;
+    }).join("") || `<p style="color:#98a2b3; font-size:.85rem;">ยังไม่มีรายชื่อในกลุ่มนี้</p>`;
+
+    listEl.querySelectorAll(".item-card").forEach((card) => {
+      const realIdx = Number(card.dataset.realIdx);
+      card.querySelectorAll("[data-key]").forEach((el) => {
+        el.addEventListener("input", () => {
+          staffAll[realIdx][el.getAttribute("data-key")] = el.value;
+          pushItem(staffAll[realIdx].id, "staff", staffAll[realIdx]);
+        });
+      });
+      const photoInput = card.querySelector("[data-photo-key]");
+      if (photoInput) {
+        photoInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          compressImage(file, { maxDim: 400, quality: 0.8, mime: "image/jpeg" }).then((dataUrl) => {
+            staffAll[realIdx].photo = dataUrl;
+            const prev = card.querySelector(".staff-photo-preview");
+            prev.src = dataUrl;
+            prev.style.display = "block";
+            setStatus("saving");
+            saveItem("staff", staffAll[realIdx]).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+          });
+        });
+      }
+      card.querySelector('[data-act="del"]').addEventListener("click", () => {
+        if (confirm("ลบรายชื่อนี้ใช่หรือไม่? การลบจะมีผลกับเว็บไซต์จริงทันที")) {
+          const removedId = staffAll[realIdx].id;
+          staffAll.splice(realIdx, 1);
+          setStatus("saving");
+          deleteItem("staff", removedId).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+          renderStaffGroup(groupKey, groupLabel);
+        }
+      });
+    });
+
+    document.getElementById(`staffAdd-${groupKey}`).onclick = () => {
+      const item = { id: uid("s"), group: groupKey, name: "[เพิ่มชื่อ-สกุล]", role: groupLabel, photo: "", bio: "", order: staffAll.length };
+      staffAll.push(item);
+      setStatus("saving");
+      saveItem("staff", item).then(() => setStatus("saved")).catch((err) => setStatus("error", err.message));
+      renderStaffGroup(groupKey, groupLabel);
+    };
+  }
+
+  /* ---------- render ทั้งหมด + ปุ่มด้านล่าง ---------- */
+  function renderAll() {
+    renderTabs();
+    renderSitePanel();
+    renderNewsPanel();
+    renderActivitiesPanel();
+    renderAnnouncementsPanel();
+    renderStaffPanel();
+  }
+})();
+</script>
+</body>
+</html>
