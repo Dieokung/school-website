@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- แทนที่ [เพิ่มชื่อผู้ใช้-github] และ [เพิ่มชื่อ-repository] ด้วยค่าจริงหลัง Deploy บน GitHub Pages -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/index.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/about.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/news.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/activities.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/departments.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/students.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/downloads.html</loc></url>
+  <url><loc>https://[เพิ่มชื่อผู้ใช้-github].github.io/[เพิ่มชื่อ-repository]/contact.html</loc></url>
+</urlset>
